@@ -13,7 +13,15 @@ if (!fs.existsSync(DOWNLOADS_DIR)) {
 const app = express();
 
 // ─── middleware ──────────────────────────────────────────────────────────────
-app.use(cors({ origin: CLIENT_ORIGIN }));
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || origin.endsWith(".vercel.app") || origin === process.env.CLIENT_ORIGIN) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+}));
 app.use(express.json());
 
 // ─── static ──────────────────────────────────────────────────────────────────
