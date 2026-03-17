@@ -15,13 +15,19 @@ const app = express();
 // ─── middleware ──────────────────────────────────────────────────────────────
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || origin.endsWith(".vercel.app") || origin === process.env.CLIENT_ORIGIN) {
+    if (
+      !origin || 
+      origin.includes("vercel.app") || 
+      origin === CLIENT_ORIGIN
+    ) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error(`CORS blocked: ${origin}`));
     }
-  }
+  },
+  credentials: true
 }));
+app.options("*", cors());
 app.use(express.json());
 
 // ─── static ──────────────────────────────────────────────────────────────────
