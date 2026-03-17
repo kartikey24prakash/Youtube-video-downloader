@@ -5,6 +5,8 @@ import VideoInfo from "./components/VideoInfo.jsx";
 import FormatPicker from "./components/FormatPicker.jsx";
 import DownloadButton from "./components/DownloadButton.jsx";
 import ParticleBackground from "./components/ParticleBackground.jsx";
+import DownloadHistory from "./components/DownloadHistory.jsx";
+import Toast from "./components/Toast.jsx";
 import styles from "./App.module.css";
 
 export default function App() {
@@ -16,6 +18,12 @@ export default function App() {
   const [success, setSuccess] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState(null);
   const [downloadType, setDownloadType] = useState("video");
+  const [toast, setToast] = useState("");
+  const [history, setHistory] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("instant_history") || "[]");
+    } catch { return []; }
+  });
 
   async function handleFetch(inputUrl) {
     setUrl(inputUrl);
@@ -50,10 +58,26 @@ export default function App() {
 
       const a = document.createElement("a");
       a.href = data.downloadUrl;
-      a.target = "_blank";
       a.download = data.filename;
+      // a.target = "_blank";
+      // a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
+
       setSuccess(true);
+      setToast("Downloaded · History updated");
+
+      const newItem = {
+        ts: Date.now(),
+        title: info.title,
+        thumbnail: info.thumbnail,
+        type: downloadType,
+      };
+      const updated = [newItem, ...history].slice(0, 5);
+      setHistory(updated);
+      localStorage.setItem("instant_history", JSON.stringify(updated));
+
     } catch (e) {
       setError(e.message);
     } finally {
@@ -61,18 +85,21 @@ export default function App() {
     }
   }
 
+  function handleClearHistory() {
+    setHistory([]);
+    localStorage.removeItem("instant_history");
+  }
+
   return (
     <div className={styles.page}>
       <ParticleBackground />
 
       <div className={styles.content}>
-        {/* Nav */}
         <nav className={styles.nav}>
           <span className={styles.logo}>Instant</span>
           <span className={styles.navTag}>v1.0</span>
         </nav>
 
-        {/* Main */}
         <main className={styles.main}>
           <SearchBar onFetch={handleFetch} loading={fetchLoading} />
 
@@ -102,12 +129,16 @@ export default function App() {
               />
             </div>
           )}
+
+          <DownloadHistory history={history} onClear={handleClearHistory} />
         </main>
 
         <footer className={styles.footer}>
           Instant · For personal use only
         </footer>
       </div>
+
+      {toast && <Toast message={toast} onClose={() => setToast("")} />}
     </div>
   );
 }

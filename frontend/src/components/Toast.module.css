@@ -1,0 +1,31 @@
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 20, 20, 0.92);
+  border: 1px solid rgba(232, 89, 10, 0.4);
+  backdrop-filter: blur(12px);
+  color: #fff;
+  font-size: 13px;
+  font-family: var(--font-body);
+  padding: 12px 20px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 999;
+  animation: slideUp 0.3s ease both;
+  white-space: nowrap;
+}
+
+.icon {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

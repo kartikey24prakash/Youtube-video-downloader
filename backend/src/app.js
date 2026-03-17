@@ -3,6 +3,7 @@ import cors from "cors";
 import { CLIENT_ORIGIN, DOWNLOADS_DIR, DOWNLOADS_ROUTE } from "./config/index.js";
 import videoRoutes from "./routes/videoRoutes.js";
 import fs from "fs";
+import path from "path";
 
 // ensure downloads folder exists
 if (!fs.existsSync(DOWNLOADS_DIR)) {
@@ -16,12 +17,17 @@ app.use(cors({ origin: CLIENT_ORIGIN }));
 app.use(express.json());
 
 // ─── static ──────────────────────────────────────────────────────────────────
-app.use(DOWNLOADS_ROUTE, express.static(DOWNLOADS_DIR));
+app.use(DOWNLOADS_ROUTE, (req, res, next) => {
+  res.setHeader("Content-Disposition", "attachment");
+  next();
+}, express.static(DOWNLOADS_DIR));
 
 // ─── routes ──────────────────────────────────────────────────────────────────
 app.use("/api/video", videoRoutes);
 
 // ─── health check ────────────────────────────────────────────────────────────
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
+
+
 
 export default app;
