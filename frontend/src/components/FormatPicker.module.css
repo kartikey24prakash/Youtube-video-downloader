@@ -1,0 +1,92 @@
+.wrapper {
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.typeRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.typeBtn {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.typeBtn:hover { color: var(--text); border-color: var(--muted2); }
+
+.typeActive {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+.section { }
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 10px;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: var(--font-body);
+}
+
+.chip:hover { border-color: var(--muted2); }
+
+.chipActive {
+  background: rgba(232, 89, 10, 0.12) !important;
+  border-color: var(--accent) !important;
+}
+
+.res {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ext {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.size {
+  font-size: 10px;
+  color: var(--muted2);
+}

@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --bg:        #0c0c0c;
+  --bg2:       #141414;
+  --bg3:       #1c1c1c;
+  --accent:    #E8590A;
+  --accent2:   #ff7c38;
+  --border:    rgba(255,255,255,0.07);
+  --text:      #ffffff;
+  --muted:     #888888;
+  --muted2:    #555555;
+  --radius:    14px;
+  --radius-sm: 8px;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --transition: 0.2s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.fade-up           { animation: fadeUp 0.5s ease both; }
+.fade-up-delay-1   { animation: fadeUp 0.5s 0.1s ease both; }
+.fade-up-delay-2   { animation: fadeUp 0.5s 0.2s ease both; }
+.fade-up-delay-3   { animation: fadeUp 0.5s 0.3s ease both; }
