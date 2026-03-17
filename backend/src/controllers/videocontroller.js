@@ -1,0 +1,115 @@
+import { exec } from "child_process";
+import { promisify } from "util";
+import fs from "fs";
+import path from "path";
+import { DOWNLOADS_DIR, MAX_FORMATS } from "../config/index.js";
+
+const execAsync = promisify(exec);
+
+// ─── helpers ────────────────────────────────────────────────────────────────
+
+function buildFormatList(rawFormats = []) {
+  return rawFormats
+    .filter((f) => f.ext && (f.vcodec !== "none" || f.acodec !== "none"))
+    .map((f) => ({
+      format_id: f.format_id,
+      ext: f.ext,
+      resolution: f.resolution || (f.height ? `${f.height}p` : "audio only"),
+      filesize: f.filesize || f.filesize_approx || null,
+      vcodec: f.vcodec,
+      acodec: f.acodec,
+      format_note: f.format_note || "",
+    }))
+    .filter(
+      (f, i, arr) =>
+        arr.findIndex(
+          (x) => x.resolution === f.resolution && x.ext === f.ext
+        ) === i
+    )
+    .slice(0, MAX_FORMATS);
+}
+
+function findDownloadedFile(timestamp) {
+  const files = fs
+    .readdirSync(DOWNLOADS_DIR)
+    .filter((f) => f.startsWith(`${timestamp}_`));
+  return files[0] || null;
+}
+
+function buildDownloadCommand(url, format_id, type, outputTemplate) {
+  const ffmpegPath = "C:\\Users\\HP\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1-full_build\\bin\\ffmpeg.exe";
+
+  if (type === "audio") {
+    return `yt-dlp --no-playlist --ffmpeg-location "${ffmpegPath}" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
+  }
+  if (format_id) {
+    return `yt-dlp --no-playlist --ffmpeg-location "${ffmpegPath}" -f "${format_id}+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
+  }
+  return `yt-dlp --no-playlist --ffmpeg-location "${ffmpegPath}" -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
+}
+
+// ─── controllers ────────────────────────────────────────────────────────────
+
+export async function getVideoInfo(req, res) {
+  const { url } = req.query;
+
+  if (!url) {
+    return res.status(400).json({ error: "URL is required." });
+  }
+
+  try {
+    const { stdout } = await execAsync(
+      `yt-dlp --dump-json --no-playlist "${url}"`
+    );
+
+    const info = JSON.parse(stdout);
+
+    return res.json({
+      title: info.title,
+      thumbnail: info.thumbnail,
+      duration: info.duration,
+      uploader: info.uploader,
+      view_count: info.view_count,
+      formats: buildFormatList(info.formats),
+    });
+  } catch (err) {
+    console.error("[getVideoInfo]", err.message);
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch video info. Check the URL." });
+  }
+}
+
+export async function downloadVideo(req, res) {
+  const { url, format_id, type } = req.body;
+
+  if (!url) {
+    return res.status(400).json({ error: "URL is required." });
+  }
+
+  const timestamp = Date.now();
+  const outputTemplate = path.join(
+    DOWNLOADS_DIR,
+    `${timestamp}_%(title)s.%(ext)s`
+  );
+
+  const cmd = buildDownloadCommand(url, format_id, type, outputTemplate);
+
+  try {
+    await execAsync(cmd);
+
+    const filename = findDownloadedFile(timestamp);
+    if (!filename) throw new Error("File not found after download.");
+
+    return res.json({
+      success: true,
+      filename,
+      downloadUrl: `http://localhost:5000/downloads/${encodeURIComponent(filename)}`,
+    });
+  } catch (err) {
+    console.error("[downloadVideo]", err.message);
+    return res
+      .status(500)
+      .json({ error: "Download failed. Ensure yt-dlp and ffmpeg are installed." });
+  }
+}
