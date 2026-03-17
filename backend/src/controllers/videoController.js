@@ -6,8 +6,7 @@ import { DOWNLOADS_DIR, MAX_FORMATS, FFMPEG_PATH } from "../config/index.js";
 
 const execAsync = promisify(exec);
 const COOKIES = "/opt/render/project/src/backend/cookies.txt";
-const YT_ARGS = `--cookies "${COOKIES}" --extractor-args "youtube:player_client=ios,web"`;
-
+const YT_ARGS = `--cookies "${COOKIES}" --extractor-args "youtube:player_client=web;player_skip=webpage,configs"`;
 function buildFormatList(rawFormats = []) {
   return rawFormats
     .filter((f) => f.ext && (f.vcodec !== "none" || f.acodec !== "none"))
