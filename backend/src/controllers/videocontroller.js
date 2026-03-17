@@ -2,7 +2,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import fs from "fs";
 import path from "path";
-import { DOWNLOADS_DIR, MAX_FORMATS } from "../config/index.js";
+import { DOWNLOADS_DIR, MAX_FORMATS ,FFMPEG_PATH} from "../config/index.js";
 
 const execAsync = promisify(exec);
 
@@ -37,15 +37,14 @@ function findDownloadedFile(timestamp) {
 }
 
 function buildDownloadCommand(url, format_id, type, outputTemplate) {
-  const ffmpegPath = "C:\\Users\\HP\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1-full_build\\bin\\ffmpeg.exe";
 
   if (type === "audio") {
-    return `yt-dlp --no-playlist --ffmpeg-location "${ffmpegPath}" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
+    return `yt-dlp --no-playlist --ffmpeg-location "${FFMPEG_PATH}" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
   }
   if (format_id) {
-    return `yt-dlp --no-playlist --ffmpeg-location "${ffmpegPath}" -f "${format_id}+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
+    return `yt-dlp --no-playlist --ffmpeg-location "${FFMPEG_PATH}" -f "${format_id}+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
   }
-  return `yt-dlp --no-playlist --ffmpeg-location "${ffmpegPath}" -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
+  return `yt-dlp --no-playlist --ffmpeg-location "${FFMPEG_PATH}" -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
 }
 
 // ─── controllers ────────────────────────────────────────────────────────────
