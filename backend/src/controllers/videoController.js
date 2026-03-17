@@ -2,12 +2,11 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import fs from "fs";
 import path from "path";
-import { DOWNLOADS_DIR, MAX_FORMATS ,FFMPEG_PATH} from "../config/index.js";
-const COOKIES = "/opt/render/project/src/backend/cookies.txt";
+import { DOWNLOADS_DIR, MAX_FORMATS, FFMPEG_PATH } from "../config/index.js";
 
 const execAsync = promisify(exec);
-
-// ─── helpers ────────────────────────────────────────────────────────────────
+const COOKIES = "/opt/render/project/src/backend/cookies.txt";
+const YT_ARGS = `--cookies "${COOKIES}" --extractor-args "youtube:player_client=ios,web"`;
 
 function buildFormatList(rawFormats = []) {
   return rawFormats
@@ -23,9 +22,7 @@ function buildFormatList(rawFormats = []) {
     }))
     .filter(
       (f, i, arr) =>
-        arr.findIndex(
-          (x) => x.resolution === f.resolution && x.ext === f.ext
-        ) === i
+        arr.findIndex((x) => x.resolution === f.resolution && x.ext === f.ext) === i
     )
     .slice(0, MAX_FORMATS);
 }
@@ -37,32 +34,15 @@ function findDownloadedFile(timestamp) {
   return files[0] || null;
 }
 
-// function buildDownloadCommand(url, format_id, type, outputTemplate) {
-
-//   if (type === "audio") {
-//     return `yt-dlp --no-playlist --ffmpeg-location "${FFMPEG_PATH}" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
-//   }
-//   if (format_id) {
-//     return `yt-dlp --no-playlist --ffmpeg-location "${FFMPEG_PATH}" -f "${format_id}+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
-//   }
-//   return `yt-dlp --no-playlist --ffmpeg-location "${FFMPEG_PATH}" -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
-// }
-
-
-
 function buildDownloadCommand(url, format_id, type, outputTemplate) {
-  const cookies = `--cookies "${COOKIES}"`;
   if (type === "audio") {
-    return `yt-dlp --no-playlist ${cookies} --ffmpeg-location "${FFMPEG_PATH}" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
+    return `yt-dlp --no-playlist ${YT_ARGS} --ffmpeg-location "${FFMPEG_PATH}" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
   }
   if (format_id) {
-    return `yt-dlp --no-playlist ${cookies} --ffmpeg-location "${FFMPEG_PATH}" -f "${format_id}+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
+    return `yt-dlp --no-playlist ${YT_ARGS} --ffmpeg-location "${FFMPEG_PATH}" -f "${format_id}+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
   }
-  return `yt-dlp --no-playlist ${cookies} --ffmpeg-location "${FFMPEG_PATH}" -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
+  return `yt-dlp --no-playlist ${YT_ARGS} --ffmpeg-location "${FFMPEG_PATH}" -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "${outputTemplate}" "${url}"`;
 }
-// ─── controllers ────────────────────────────────────────────────────────────
-
-
 
 export async function getVideoInfo(req, res) {
   const { url } = req.query;
@@ -70,7 +50,7 @@ export async function getVideoInfo(req, res) {
 
   try {
     const { stdout } = await execAsync(
-      `yt-dlp --dump-json --no-playlist --cookies "${COOKIES}" "${url}"`
+      `yt-dlp --dump-json --no-playlist ${YT_ARGS} "${url}"`
     );
     const info = JSON.parse(stdout);
     return res.json({
@@ -87,21 +67,12 @@ export async function getVideoInfo(req, res) {
   }
 }
 
-
-
 export async function downloadVideo(req, res) {
   const { url, format_id, type } = req.body;
-
-  if (!url) {
-    return res.status(400).json({ error: "URL is required." });
-  }
+  if (!url) return res.status(400).json({ error: "URL is required." });
 
   const timestamp = Date.now();
-  const outputTemplate = path.join(
-    DOWNLOADS_DIR,
-    `${timestamp}_%(title)s.%(ext)s`
-  );
-
+  const outputTemplate = path.join(DOWNLOADS_DIR, `${timestamp}_%(title)s.%(ext)s`);
   const cmd = buildDownloadCommand(url, format_id, type, outputTemplate);
 
   try {
@@ -110,15 +81,13 @@ export async function downloadVideo(req, res) {
     const filename = findDownloadedFile(timestamp);
     if (!filename) throw new Error("File not found after download.");
 
-    return res.json({
-      success: true,
-      filename,
-      downloadUrl: `http://localhost:5000/downloads/${encodeURIComponent(filename)}`,
-    });
+    const filePath = path.join(DOWNLOADS_DIR, filename);
+    res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(filename)}"`);
+    res.setHeader("Content-Type", "application/octet-stream");
+    return res.sendFile(filePath);
+
   } catch (err) {
     console.error("[downloadVideo]", err.message);
-    return res
-      .status(500)
-      .json({ error: "Download failed. Ensure yt-dlp and ffmpeg are installed." });
+    return res.status(500).json({ error: "Download failed. Ensure yt-dlp and ffmpeg are installed." });
   }
 }
