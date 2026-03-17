@@ -33,6 +33,13 @@ export default function SearchBar({ onFetch, loading }) {
                     />
                     <button
                         type="button"
+                        className={styles.clearBtn}
+                        onClick={() => setUrl("")}
+                    >
+                        ×
+                    </button>
+                    <button
+                        type="button"
                         className={styles.pasteBtn}
                         onClick={async () => {
                             try {
@@ -45,6 +52,7 @@ export default function SearchBar({ onFetch, loading }) {
                     >
                         Paste
                     </button>
+
                 </div>
                 <button className={styles.btn} type="submit" disabled={loading || !url.trim()}>
                     {loading ? <span className={styles.spinner} /> : "Download"}
