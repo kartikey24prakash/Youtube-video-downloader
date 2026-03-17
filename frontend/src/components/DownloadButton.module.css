@@ -60,5 +60,11 @@
   text-align: center;
   margin-top: 12px;
   font-size: 13px;
-  color: #4ade80;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.successMsg strong {
+  color: var(--accent);
+  font-weight: 500;
 }

@@ -1,62 +1,94 @@
 .wrapper {
   text-align: center;
-  padding: 80px 24px 48px;
-}
-
-.hero {
-  margin-bottom: 36px;
-  animation: fadeUp 0.6s ease both;
+  padding: 100px 24px 60px;
+  animation: fadeUp 0.7s ease both;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(232, 89, 10, 0.12);
+  border: 1px solid rgba(232, 89, 10, 0.3);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 24px;
 }
 
 .title {
   font-family: var(--font-head);
-  font-size: clamp(48px, 8vw, 80px);
-  font-weight: 800;
-  letter-spacing: -2px;
-  background: linear-gradient(135deg, #fff 40%, var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-  margin-bottom: 14px;
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.accent {
+  color: var(--accent);
+  font-style: italic;
 }
 
 .sub {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 300;
+  margin-bottom: 36px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .form {
   display: flex;
   gap: 10px;
-  max-width: 620px;
-  margin: 0 auto;
-  animation: fadeUp 0.6s 0.15s ease both;
+  max-width: 580px;
+  margin: 0 auto 24px;
+}
+
+.inputWrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.linkIcon {
+  position: absolute;
+  left: 14px;
+  width: 16px;
+  height: 16px;
+  color: var(--muted2);
+  flex-shrink: 0;
 }
 
 .input {
-  flex: 1;
-  background: var(--bg2);
+  width: 100%;
+  background: rgba(255,255,255,0.05);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px 18px;
+  padding: 14px 70px 14px 40px;
   color: var(--text);
   font-family: var(--font-body);
   font-size: 14px;
   outline: none;
-  transition: border-color var(--transition);
+  backdrop-filter: blur(10px);
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .input::placeholder { color: var(--muted2); }
-
 .input:focus {
   border-color: var(--accent);
+  background: rgba(255,255,255,0.07);
 }
 
 .btn {
@@ -64,16 +96,17 @@
   color: #fff;
   border: none;
   border-radius: var(--radius);
-  padding: 14px 28px;
+  padding: 14px 32px;
   font-family: var(--font-head);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  transition: background var(--transition), transform var(--transition);
+  transition: background 0.2s, transform 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 90px;
+  min-width: 100px;
+  letter-spacing: 0.3px;
 }
 
 .btn:hover:not(:disabled) {
@@ -81,14 +114,10 @@
   transform: translateY(-1px);
 }
 
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .spinner {
-  width: 16px;
-  height: 16px;
+  width: 16px; height: 16px;
   border: 2px solid rgba(255,255,255,0.3);
   border-top-color: #fff;
   border-radius: 50%;
@@ -97,8 +126,48 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+.hints {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted2);
+}
+
+.dot {
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
 @media (max-width: 500px) {
   .form { flex-direction: column; }
-  .btn { width: 100%; padding: 14px; }
-  .wrapper { padding: 60px 16px 36px; }
+  .wrapper { padding: 80px 16px 40px; }
+}
+
+.pasteBtn {
+  position: absolute;
+  right: 10px;
+  background: rgba(232, 89, 10, 0.12);
+  border: 1px solid rgba(232, 89, 10, 0.25);
+  border-radius: 6px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: var(--font-body);
+}
+
+.pasteBtn:hover {
+  background: rgba(232, 89, 10, 0.22);
 }

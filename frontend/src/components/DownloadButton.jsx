@@ -28,7 +28,7 @@ export default function DownloadButton({ onClick, loading, downloadType, success
 
       {success && (
         <p className={styles.successMsg}>
-          File saved to your downloads folder.
+          ✓ Download complete · Open with <strong>VLC Media Player</strong> for best playback.
         </p>
       )}
     </div>

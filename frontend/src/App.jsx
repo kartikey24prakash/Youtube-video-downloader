@@ -4,6 +4,7 @@ import SearchBar from "./components/SearchBar.jsx";
 import VideoInfo from "./components/VideoInfo.jsx";
 import FormatPicker from "./components/FormatPicker.jsx";
 import DownloadButton from "./components/DownloadButton.jsx";
+import ParticleBackground from "./components/ParticleBackground.jsx";
 import styles from "./App.module.css";
 
 export default function App() {
@@ -49,6 +50,7 @@ export default function App() {
 
       const a = document.createElement("a");
       a.href = data.downloadUrl;
+      a.target = "_blank";
       a.download = data.filename;
       a.click();
       setSuccess(true);
@@ -61,40 +63,51 @@ export default function App() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.container}>
-        <SearchBar onFetch={handleFetch} loading={fetchLoading} />
+      <ParticleBackground />
 
-        {error && (
-          <div className={styles.error}>
-            <span>⚠</span> {error}
-          </div>
-        )}
+      <div className={styles.content}>
+        {/* Nav */}
+        <nav className={styles.nav}>
+          <span className={styles.logo}>Instant</span>
+          <span className={styles.navTag}>v1.0</span>
+        </nav>
 
-        {info && (
-          <div className={styles.results}>
-            <VideoInfo info={info} />
-            <div className={styles.divider} />
-            <FormatPicker
-              formats={info.formats || []}
-              selected={selectedFormat}
-              onSelect={setSelectedFormat}
-              downloadType={downloadType}
-              onTypeChange={(t) => { setDownloadType(t); setSuccess(false); }}
-            />
-            <div className={styles.divider} />
-            <DownloadButton
-              onClick={handleDownload}
-              loading={dlLoading}
-              downloadType={downloadType}
-              success={success}
-            />
-          </div>
-        )}
+        {/* Main */}
+        <main className={styles.main}>
+          <SearchBar onFetch={handleFetch} loading={fetchLoading} />
+
+          {error && (
+            <div className={styles.error}>
+              <span>⚠</span> {error}
+            </div>
+          )}
+
+          {info && (
+            <div className={styles.results}>
+              <VideoInfo info={info} />
+              <div className={styles.divider} />
+              <FormatPicker
+                formats={info.formats || []}
+                selected={selectedFormat}
+                onSelect={setSelectedFormat}
+                downloadType={downloadType}
+                onTypeChange={(t) => { setDownloadType(t); setSuccess(false); }}
+              />
+              <div className={styles.divider} />
+              <DownloadButton
+                onClick={handleDownload}
+                loading={dlLoading}
+                downloadType={downloadType}
+                success={success}
+              />
+            </div>
+          )}
+        </main>
+
+        <footer className={styles.footer}>
+          Instant · For personal use only
+        </footer>
       </div>
-
-      <footer className={styles.footer}>
-        YTDrop · For personal use only
-      </footer>
     </div>
   );
 }
