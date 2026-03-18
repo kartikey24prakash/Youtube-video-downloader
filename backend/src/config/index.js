@@ -1,5 +1,6 @@
 import path from "path";
 import { fileURLToPath } from "url";
+export const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

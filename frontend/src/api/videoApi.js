@@ -1,4 +1,5 @@
 const BASE = "https://instant-backend-79ne.onrender.com/api/video";
+// const BASE = "http://localhost:5000/api/video";
 
 export async function fetchVideoInfo(url) {
   const res = await fetch(`${BASE}/info?url=${encodeURIComponent(url)}`);
